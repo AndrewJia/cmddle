@@ -4,7 +4,7 @@ const guessInput = document.getElementById("guess-input");
 const submitGuess = document.getElementById("submit-guess");
 const message = document.getElementById("message");
 
-submitGuess.addEventListener("click", () => {
+function handleGuessSubmission() {
     const guess = guessInput.value.toUpperCase();
     if (guess.length !== 5) {
         message.textContent = "Please enter a 5-letter word.";
@@ -52,5 +52,15 @@ submitGuess.addEventListener("click", () => {
         submitGuess.disabled = true;
     } else {
         guessInput.value = ""; // Clear the input for the next guess
+    }
+}
+
+// Add event listener for the button click
+submitGuess.addEventListener("click", handleGuessSubmission);
+
+// Add event listener for pressing "Enter" in the input box
+guessInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        handleGuessSubmission();
     }
 });
