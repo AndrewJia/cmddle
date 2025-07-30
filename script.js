@@ -1,13 +1,41 @@
-const word = "APPLE"; // Replace with a randomly selected word from your backend
+let word = ""; // The hidden word will be loaded dynamically
+let validWords = []; // Store all valid words from combined_sorted.txt
 const feedbackContainer = document.getElementById("feedback-container");
 const guessInput = document.getElementById("guess-input");
 const submitGuess = document.getElementById("submit-guess");
 const message = document.getElementById("message");
 
+// Fetch the solution list and pick a random word
+fetch("data/likely_solutions_trimmed.txt")
+    .then((response) => response.text())
+    .then((text) => {
+        const solutions = text.split("\n").map((word) => word.trim().toUpperCase());
+        word = solutions[Math.floor(Math.random() * solutions.length)];
+        console.log(`Random solution selected: ${word}`); // For debugging purposes
+    })
+    .catch((error) => {
+        console.error("Error loading solution list:", error);
+    });
+
+// Fetch the valid guesses list
+fetch("data/combined_sorted.txt")
+    .then((response) => response.text())
+    .then((text) => {
+        validWords = text.split("\n").map((word) => word.trim().toUpperCase());
+    })
+    .catch((error) => {
+        console.error("Error loading valid words list:", error);
+    });
+
 function handleGuessSubmission() {
     const guess = guessInput.value.toUpperCase();
     if (guess.length !== 5) {
         message.textContent = "Please enter a 5-letter word.";
+        return;
+    }
+
+    if (!validWords.includes(guess)) {
+        message.textContent = "Invalid word. Please enter a real word.";
         return;
     }
 
