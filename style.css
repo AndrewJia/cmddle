@@ -22,9 +22,15 @@ h1 {
 
 #feedback-container {
     margin: 20px 0;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
+    display: flex;
+    flex-direction: column; /* Ensure rows are stacked vertically */
+    gap: 10px; /* Add spacing between rows */
+    justify-content: center;
+}
+
+.feedback-row {
+    display: flex; /* Make each row horizontal */
+    gap: 10px; /* Add spacing between boxes in a row */
     justify-content: center;
 }
 
