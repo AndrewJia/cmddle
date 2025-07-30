@@ -5,19 +5,22 @@ const feedbackContainer = document.getElementById("feedback-container");
 const guessInput = document.getElementById("guess-input");
 const submitGuess = document.getElementById("submit-guess");
 const giveUpButton = document.getElementById("give-up");
+const playAgainButton = document.getElementById("play-again");
 const message = document.getElementById("message");
 
 // Fetch the solution list and pick a random word
-fetch("data/likely_solutions_trimmed.txt")
-    .then((response) => response.text())
-    .then((text) => {
-        const solutions = text.split("\n").map((word) => word.trim().toUpperCase());
-        word = solutions[Math.floor(Math.random() * solutions.length)];
-        console.log(`Random solution selected: ${word}`); // For debugging purposes
-    })
-    .catch((error) => {
-        console.error("Error loading solution list:", error);
-    });
+function fetchSolution() {
+    fetch("data/likely_solutions_trimmed.txt")
+        .then((response) => response.text())
+        .then((text) => {
+            const solutions = text.split("\n").map((word) => word.trim().toUpperCase());
+            word = solutions[Math.floor(Math.random() * solutions.length)];
+            console.log(`Random solution selected: ${word}`); // For debugging purposes
+        })
+        .catch((error) => {
+            console.error("Error loading solution list:", error);
+        });
+}
 
 // Fetch the valid guesses list
 fetch("data/combined_sorted.txt")
@@ -28,6 +31,9 @@ fetch("data/combined_sorted.txt")
     .catch((error) => {
         console.error("Error loading valid words list:", error);
     });
+
+// Initialize the solution
+fetchSolution();
 
 function handleGuessSubmission() {
     const guess = guessInput.value.toUpperCase();
@@ -87,6 +93,7 @@ function handleGuessSubmission() {
         guessInput.disabled = true;
         submitGuess.disabled = true;
         giveUpButton.disabled = true;
+        playAgainButton.style.display = "inline"; // Show the "Play Again" button
     } else {
         guessInput.value = ""; // Clear the input for the next guess
     }
@@ -99,6 +106,21 @@ function handleGiveUp() {
     guessInput.disabled = true;
     submitGuess.disabled = true;
     giveUpButton.disabled = true;
+    playAgainButton.style.display = "inline"; // Show the "Play Again" button
+}
+
+// Handle "Play Again" button click
+function handlePlayAgain() {
+    // Reset the game state
+    feedbackContainer.innerHTML = ""; // Clear feedback
+    guessInput.value = ""; // Clear the input field
+    message.textContent = ""; // Clear the message
+    guessInput.disabled = false;
+    submitGuess.disabled = false;
+    giveUpButton.disabled = false;
+    playAgainButton.style.display = "none"; // Hide the "Play Again" button
+    previousGuesses.clear(); // Clear previous guesses
+    fetchSolution(); // Fetch a new solution
 }
 
 // Add event listener for the button click
@@ -113,3 +135,6 @@ guessInput.addEventListener("keydown", (event) => {
 
 // Add event listener for the "Give Up" button
 giveUpButton.addEventListener("click", handleGiveUp);
+
+// Add event listener for the "Play Again" button
+playAgainButton.addEventListener("click", handlePlayAgain);
