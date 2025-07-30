@@ -1,5 +1,6 @@
 let word = ""; // The hidden word will be loaded dynamically
 let validWords = []; // Store all valid words from combined_sorted.txt
+let previousGuesses = new Set(); // Track previously guessed words
 const feedbackContainer = document.getElementById("feedback-container");
 const guessInput = document.getElementById("guess-input");
 const submitGuess = document.getElementById("submit-guess");
@@ -39,6 +40,12 @@ function handleGuessSubmission() {
         return;
     }
 
+    if (previousGuesses.has(guess)) {
+        message.textContent = "You already guessed that word. Try a different one.";
+        return;
+    }
+
+    previousGuesses.add(guess); // Add the guess to the set of previous guesses
     message.textContent = ""; // Clear any previous message
 
     const wordLetterCounts = {};
