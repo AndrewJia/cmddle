@@ -1,4 +1,5 @@
 import random
+import os
 
 def load_accepted_words(file_path):
     """
@@ -45,7 +46,23 @@ def play_game(word, accepted_words):
     print("Welcome to the word guessing game!")
     print("Guess the 5-letter word. Type 'exit' to quit.")
     
+    feedback_history = []  # Store feedback for each guess
+    message = ""  # Message to display after clearing the console
+    
     while True:
+        # Clear the console
+        os.system('cls' if os.name == 'nt' else 'clear')
+        
+        # Print previous feedbacks
+        for feedback in feedback_history:
+            print(feedback)
+        
+        # Print the message (if any)
+        if message:
+            print(message)
+            message = ""  # Reset the message
+        
+        # Ask for the next guess
         guess = input("Enter your guess: ").strip().upper()
         
         if guess == "EXIT":
@@ -53,11 +70,11 @@ def play_game(word, accepted_words):
             break
         
         if len(guess) != 5:
-            print("Please enter a 5-letter word.")
+            message = "Please enter a 5-letter word."
             continue
         
         if guess not in accepted_words:
-            print("Invalid word. Please enter a real word.")
+            message = "Invalid word. Please enter a real word."
             continue
         
         # Feedback logic
@@ -81,13 +98,15 @@ def play_game(word, accepted_words):
                     feedback[i] = "\033[93m" + letter + "\033[0m"  # Yellow box
                     word_letter_counts[letter] -= 1  # Decrement count for matched letter
 
-        print("Feedback: " + " ".join(feedback))
+        feedback_str = " ".join(feedback)
+        feedback_history.append(feedback_str)  # Add feedback to history
         
         if guess == word:
+            os.system('cls' if os.name == 'nt' else 'clear')  # Clear console before final message
+            for feedback in feedback_history:
+                print(feedback)
             print("Congratulations! You guessed the word!")
             break
-        else:
-            print("Incorrect guess. Try again.")
 
 # Example usage
 if __name__ == "__main__":
