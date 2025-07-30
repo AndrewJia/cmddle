@@ -12,7 +12,6 @@ submitGuess.addEventListener("click", () => {
     }
 
     message.textContent = ""; // Clear any previous message
-    feedbackContainer.innerHTML = ""; // Clear previous feedback
 
     const wordLetterCounts = {};
     for (const letter of word) {
@@ -33,12 +32,18 @@ submitGuess.addEventListener("click", () => {
         }
     }
 
+    // Create a row for the current guess
+    const feedbackRow = document.createElement("div");
+    feedbackRow.classList.add("feedback-row");
+
     feedback.forEach(({ letter, class: colorClass }) => {
         const box = document.createElement("div");
         box.textContent = letter;
         box.classList.add("feedback-box", colorClass);
-        feedbackContainer.appendChild(box);
+        feedbackRow.appendChild(box);
     });
+
+    feedbackContainer.appendChild(feedbackRow); // Append the row to the feedback container
 
     if (guess === word) {
         message.textContent = "Congratulations! You guessed the word!";
