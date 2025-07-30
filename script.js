@@ -4,6 +4,7 @@ let previousGuesses = new Set(); // Track previously guessed words
 const feedbackContainer = document.getElementById("feedback-container");
 const guessInput = document.getElementById("guess-input");
 const submitGuess = document.getElementById("submit-guess");
+const giveUpButton = document.getElementById("give-up");
 const message = document.getElementById("message");
 
 // Fetch the solution list and pick a random word
@@ -85,9 +86,19 @@ function handleGuessSubmission() {
         message.style.color = "green";
         guessInput.disabled = true;
         submitGuess.disabled = true;
+        giveUpButton.disabled = true;
     } else {
         guessInput.value = ""; // Clear the input for the next guess
     }
+}
+
+// Handle "Give Up" button click
+function handleGiveUp() {
+    message.textContent = `The word was: ${word}`;
+    message.style.color = "red";
+    guessInput.disabled = true;
+    submitGuess.disabled = true;
+    giveUpButton.disabled = true;
 }
 
 // Add event listener for the button click
@@ -99,3 +110,6 @@ guessInput.addEventListener("keydown", (event) => {
         handleGuessSubmission();
     }
 });
+
+// Add event listener for the "Give Up" button
+giveUpButton.addEventListener("click", handleGiveUp);
