@@ -37,7 +37,7 @@ def pick_random_word(file_path):
 def play_game(word, accepted_words):
     """
     Starts a loop to take guesses from the user and checks if the guess matches the word.
-    Provides feedback for each letter based on Wordle rules.
+    Provides feedback for each letter based on Wordle rules, including handling doubled letters.
 
     :param word: The word to guess.
     :param accepted_words: A set of valid words.
@@ -49,7 +49,7 @@ def play_game(word, accepted_words):
         guess = input("Enter your guess: ").strip().upper()
         
         if guess == "EXIT":
-            print("Thanks for playing!")
+            print(f"Thanks for playing! The word was: {word}")
             break
         
         if len(guess) != 5:
@@ -60,16 +60,27 @@ def play_game(word, accepted_words):
             print("Invalid word. Please enter a real word.")
             continue
         
-        # Provide feedback for the guess
-        feedback = []
+        # Feedback logic
+        feedback = ["\033[90m" + letter + "\033[0m" for letter in guess]  # Default to black boxes
+        word_letter_counts = {}
+
+        # Count occurrences of each letter in the word
+        for letter in word:
+            word_letter_counts[letter] = word_letter_counts.get(letter, 0) + 1
+
+        # First pass: Handle green boxes (correct position)
         for i, letter in enumerate(guess):
             if letter == word[i]:
-                feedback.append("\033[92m" + letter + "\033[0m")  # Green box for correct position
-            elif letter in word:
-                feedback.append("\033[93m" + letter + "\033[0m")  # Yellow box for wrong position
-            else:
-                feedback.append("\033[90m" + letter + "\033[0m")  # Black box for not in word
-        
+                feedback[i] = "\033[92m" + letter + "\033[0m"  # Green box
+                word_letter_counts[letter] -= 1  # Decrement count for matched letter
+
+        # Second pass: Handle yellow boxes (wrong position)
+        for i, letter in enumerate(guess):
+            if feedback[i] == "\033[90m" + letter + "\033[0m":  # Only process letters not already green
+                if letter in word_letter_counts and word_letter_counts[letter] > 0:
+                    feedback[i] = "\033[93m" + letter + "\033[0m"  # Yellow box
+                    word_letter_counts[letter] -= 1  # Decrement count for matched letter
+
         print("Feedback: " + " ".join(feedback))
         
         if guess == word:
@@ -85,6 +96,7 @@ if __name__ == "__main__":
     
     accepted_words = load_accepted_words(combined_file)
     random_word = pick_random_word(solutions_file)
+    #random_word = 'BRASS'  # For testing purposes, you can set a fixed word
 
     print(f"Random word selected: {random_word}")  # For debugging purposes
     
