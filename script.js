@@ -63,6 +63,71 @@ function createBoard() {
     }
 }
 
+function createKeyboard() {
+    const keyboardContainer = document.getElementById("keyboard");
+    keyboardContainer.innerHTML = "";
+    
+    const rows = [
+        ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+        ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+        ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACK"]
+    ];
+    
+    rows.forEach((rowKeys, rowIndex) => {
+        const rowEl = document.createElement("div");
+        rowEl.classList.add("keyboard-row");
+        
+        rowKeys.forEach((key) => {
+            const button = document.createElement("button");
+            button.classList.add("key");
+            button.textContent = key;
+            
+            if (key === "ENTER") {
+                button.classList.add("special");
+                button.id = "key-enter";
+            } else if (key === "BACK") {
+                button.classList.add("special");
+                button.id = "key-backspace";
+            } else {
+                button.setAttribute("data-key", key);
+            }
+            
+            rowEl.appendChild(button);
+        });
+        
+        keyboardContainer.appendChild(rowEl);
+    });
+    
+    // Wire keyboard button clicks
+    document.querySelectorAll(".key[data-key]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const event = new KeyboardEvent("keydown", { key: button.dataset.key });
+            handleKeyDown(event);
+        });
+    });
+    
+    document.getElementById("key-enter").addEventListener("click", () => {
+        const event = new KeyboardEvent("keydown", { key: "Enter" });
+        handleKeyDown(event);
+    });
+    
+    document.getElementById("key-backspace").addEventListener("click", () => {
+        const event = new KeyboardEvent("keydown", { key: "Backspace" });
+        handleKeyDown(event);
+    });
+}
+
+function updateKeyboardColors(guess, colors) {
+    for (let col = 0; col < 5; col++) {
+        const letter = guess[col];
+        const button = document.querySelector(`.key[data-key="${letter}"]`);
+        if (button) {
+            button.classList.remove("green", "yellow", "gray");
+            button.classList.add(colors[col]);
+        }
+    }
+}
+
 function setCell(row, col, value) {
     const cell = document.getElementById(`cell-${row}-${col}`);
     if (!cell) return;
@@ -153,6 +218,7 @@ function commitGuess() {
 
     const colors = computeFeedback(guess, word);
     setRowColors(currentRow, colors);
+    updateKeyboardColors(guess, colors);
 
     if (guess === word) {
         finishGame("Congratulations! You guessed the word!", "#1a8917");
@@ -256,3 +322,4 @@ hardModeCheckbox.addEventListener("change", () => {
 playAgainButton.addEventListener("click", resetGame);
 
 createBoard();
+createKeyboard();
