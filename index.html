@@ -9,15 +9,15 @@
 <body>
     <div class="game-container">
         <h1>Wordle Game</h1>
-        <div id="feedback-container"></div>
+        <div id="board-container" class="board-container"></div>
         <label class="checkbox-label">
             <input type="checkbox" id="hard-mode">
             Hard mode
         </label>
-        <input type="text" id="guess-input" maxlength="5" placeholder="Enter your guess">
-        <button id="submit-guess">Submit</button>
-        <button id="give-up">Give Up</button>
-        <button id="play-again" style="display: none;">Play Again</button>
+        <div class="controls">
+            <button id="give-up">Give Up</button>
+            <button id="play-again" style="display: none;">Play Again</button>
+        </div>
         <p id="message"></p>
     </div>
     <script src="script.js"></script>
