@@ -1,32 +1,60 @@
 let word = ""; // The hidden word will be loaded dynamically
 let validWords = []; // Store all valid words from combined_sorted.txt
+let solutions = []; // Store normal solution words
+let hardWords = []; // Store hard mode solution words
 let previousGuesses = new Set(); // Track previously guessed words
 const feedbackContainer = document.getElementById("feedback-container");
 const guessInput = document.getElementById("guess-input");
 const submitGuess = document.getElementById("submit-guess");
 const giveUpButton = document.getElementById("give-up");
 const playAgainButton = document.getElementById("play-again");
+const hardModeCheckbox = document.getElementById("hard-mode");
 const message = document.getElementById("message");
 
-// Fetch the solution list and pick a random word
-function fetchSolution() {
-    fetch("data/likely_solutions_trimmed.txt")
-        .then((response) => response.text())
-        .then((text) => {
-            const solutions = text.split("\n").map((word) => word.trim().toUpperCase());
-            word = solutions[Math.floor(Math.random() * solutions.length)];
-            console.log(`Random solution selected: ${word}`); // For debugging purposes
-        })
-        .catch((error) => {
-            console.error("Error loading solution list:", error);
-        });
+function chooseSolutionList() {
+    if (hardModeCheckbox.checked && hardWords.length > 0) {
+        return hardWords;
+    }
+    return solutions;
 }
 
-// Fetch the valid guesses list
+// Fetch the solution lists and pick a random word
+function fetchSolution() {
+    const source = chooseSolutionList();
+    if (source.length === 0) {
+        console.error("No words available for the current mode.");
+        return;
+    }
+    word = source[Math.floor(Math.random() * source.length)];
+    console.log(`Random solution selected: ${word}`); // For debugging purposes
+}
+
+// Load solution and valid guess data
+fetch("data/likely_solutions_trimmed.txt")
+    .then((response) => response.text())
+    .then((text) => {
+        solutions = text.split("\n").map((word) => word.trim().toUpperCase()).filter(Boolean);
+        if (!hardModeCheckbox.checked) {
+            fetchSolution();
+        }
+    })
+    .catch((error) => {
+        console.error("Error loading solution list:", error);
+    });
+
+fetch("data/hard_words.txt")
+    .then((response) => response.text())
+    .then((text) => {
+        hardWords = text.split("\n").map((word) => word.trim().toUpperCase()).filter(Boolean);
+    })
+    .catch((error) => {
+        console.error("Error loading hard words list:", error);
+    });
+
 fetch("data/combined_sorted.txt")
     .then((response) => response.text())
     .then((text) => {
-        validWords = text.split("\n").map((word) => word.trim().toUpperCase());
+        validWords = text.split("\n").map((word) => word.trim().toUpperCase()).filter(Boolean);
     })
     .catch((error) => {
         console.error("Error loading valid words list:", error);

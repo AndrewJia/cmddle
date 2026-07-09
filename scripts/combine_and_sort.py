@@ -1,6 +1,6 @@
-trimmed_file = r"c:\Users\andre\OneDrive\Documents\GitHub\cmddle\likely_solutions_trimmed"
-possibles_file = r"c:\Users\andre\OneDrive\Documents\GitHub\cmddle\wordle_possibles.txt"
-output_file = r"c:\Users\andre\OneDrive\Documents\GitHub\cmddle\combined_sorted.txt"
+trimmed_file = "../data/likely_solutions_trimmed.txt"
+possibles_file = "../data/wordle_possibles.txt"
+output_file = "../data/combined_sorted.txt"
 
 # Read both files
 with open(trimmed_file, 'r') as file1, open(possibles_file, 'r') as file2:

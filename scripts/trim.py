@@ -1,5 +1,5 @@
-input_file = r"c:\Users\andre\OneDrive\Documents\GitHub\cmddle\likely_solutions"
-output_file = r"c:\Users\andre\OneDrive\Documents\GitHub\cmddle\likely_solutions_trimmed"
+input_file = "../data/likely_solutions"
+output_file = "../data/likely_solutions_trimmed.txt"
 
 with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
     for line in infile:
