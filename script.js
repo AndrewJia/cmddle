@@ -14,6 +14,41 @@ const playAgainButton = document.getElementById("play-again");
 const hardModeCheckbox = document.getElementById("hard-mode");
 const message = document.getElementById("message");
 
+// Helper to fetch a text file and return its trimmed uppercase lines
+function fetchText(url) {
+    return fetch(url)
+        .then((response) => {
+            if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.status}`);
+            return response.text();
+        })
+        .then((text) => text.split("\n").map((w) => w.trim().toUpperCase()).filter(Boolean));
+}
+
+// Load solution and valid guess data (centralized loader)
+function loadData() {
+    fetchText("data/likely_solutions_trimmed.txt")
+        .then((lines) => {
+            solutions = lines;
+            solutionsLoaded = true;
+            tryFetchSolution();
+        })
+        .catch((err) => console.error("Error loading solution list:", err));
+
+    fetchText("data/hard_words.txt")
+        .then((lines) => {
+            hardWords = lines;
+            hardWordsLoaded = true;
+            tryFetchSolution();
+        })
+        .catch((err) => console.error("Error loading hard words list:", err));
+
+    fetchText("data/combined_sorted.txt")
+        .then((lines) => {
+            validWords = lines;
+        })
+        .catch((err) => console.error("Error loading valid words list:", err));
+}
+
 function chooseSolutionList() {
     if (hardModeCheckbox.checked && hardWords.length > 0) {
         return hardWords;
@@ -117,13 +152,19 @@ function createKeyboard() {
     });
 }
 
+/* 
+ * update colors of the on-screen keyboard based on the feedback from the guess 
+ * if a letter is already marked as green, it should not be downgraded to yellow or gray
+*/
 function updateKeyboardColors(guess, colors) {
     for (let col = 0; col < 5; col++) {
         const letter = guess[col];
         const button = document.querySelector(`.key[data-key="${letter}"]`);
         if (button) {
-            button.classList.remove("green", "yellow", "gray");
-            button.classList.add(colors[col]);
+            if (!button.classList.contains("green")) {
+                button.classList.remove("green", "yellow", "gray");
+                button.classList.add(colors[col]);
+            }
         }
     }
 }
@@ -273,37 +314,8 @@ function resetGame() {
     tryFetchSolution();
 }
 
-// Load solution and valid guess data
-fetch("data/likely_solutions_trimmed.txt")
-    .then((response) => response.text())
-    .then((text) => {
-        solutions = text.split("\n").map((word) => word.trim().toUpperCase()).filter(Boolean);
-        solutionsLoaded = true;
-        tryFetchSolution();
-    })
-    .catch((error) => {
-        console.error("Error loading solution list:", error);
-    });
-
-fetch("data/hard_words.txt")
-    .then((response) => response.text())
-    .then((text) => {
-        hardWords = text.split("\n").map((word) => word.trim().toUpperCase()).filter(Boolean);
-        hardWordsLoaded = true;
-        tryFetchSolution();
-    })
-    .catch((error) => {
-        console.error("Error loading hard words list:", error);
-    });
-
-fetch("data/combined_sorted.txt")
-    .then((response) => response.text())
-    .then((text) => {
-        validWords = text.split("\n").map((word) => word.trim().toUpperCase()).filter(Boolean);
-    })
-    .catch((error) => {
-        console.error("Error loading valid words list:", error);
-    });
+// Centralized data loader
+loadData();
 
 window.addEventListener("keydown", handleKeyDown);
 

@@ -176,4 +176,9 @@ h1 {
         padding: 4px 6px;
         font-size: 0.75rem;
     }
+    
+    .game-container {
+        margin: auto;
+        padding: 12px;
+    }
 }
